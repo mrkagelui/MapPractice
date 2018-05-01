@@ -2,6 +2,7 @@ package org.mrkagelui.mymap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MyMap<K, V> {
     private static final int InitialCapacity = 64;
@@ -19,6 +20,10 @@ public class MyMap<K, V> {
             entryLists.add(new ArrayList<>());
         }
         size = 0;
+    }
+
+    public List<Entry<K, V>> Entries() {
+        return entryLists.stream().flatMap(List::stream).collect(Collectors.toList());
     }
 
     public V get(K key) {
