@@ -22,26 +22,46 @@ public class MyMap<K, V> {
     }
 
     public V get(K key) {
-        int bucket = getBucketIndex(key.hashCode());
-        List<Entry<K, V>> entries = entryLists.get(bucket);
+        List<Entry<K, V>> entries = getEntriesForKey(key);
         V ret = null;
-        if (0 == entries.size()) return null;
-        else {
-            for (Entry<K, V> entry : entries) {
-                if (entry.getKey().equals(key)) {
-                    ret = entry.getValue();
-                    break;
-                }
+        for (Entry<K, V> entry : entries) {
+            if (entry.getKey().equals(key)) {
+                ret = entry.getValue();
+                break;
             }
         }
         return ret;
     }
 
+    public boolean existsKey(K key) {
+        List<Entry<K, V>> entries = getEntriesForKey(key);
+        for (Entry e : entries) {
+            if (e.getKey().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<Entry<K, V>> getEntriesForKey(K key) {
+        int bucket = getBucketIndex(key.hashCode());
+        return entryLists.get(bucket);
+    }
+
     public void put(K key, V value) {
-        int keyHash = key.hashCode();
-        int bucketIndex = getBucketIndex(keyHash);
-        entryLists.get(bucketIndex).add(new Entry<>(key, value));
-        size++;
+        List<Entry<K, V>> entries = getEntriesForKey(key);
+
+        if (existsKey(key)) {
+            for (Entry e : entries) {
+                if (e.getKey().equals(key)) {
+                    e.setValue(value);
+                }
+            }
+        }
+        else {
+            entries.add(new Entry<>(key, value));
+            size++;
+        }
 
         if ( (double)size / currentCapacity >= LoadFactorThreshold ) {
             expand();
@@ -49,16 +69,12 @@ public class MyMap<K, V> {
     }
 
     public void delete(K key) {
-        int bucket = getBucketIndex(key.hashCode());
-        List<Entry<K, V>> entries = entryLists.get(bucket);
-        if (0 == entries.size()) return;
-        else {
-            for (Entry entry : entries) {
-                if (entry.getKey().equals(key)) {
-                    entries.remove(entry);
-                    size--;
-                    break;
-                }
+        List<Entry<K, V>> entries = getEntriesForKey(key);
+        for (Entry entry : entries) {
+            if (entry.getKey().equals(key)) {
+                entries.remove(entry);
+                size--;
+                break;
             }
         }
     }
