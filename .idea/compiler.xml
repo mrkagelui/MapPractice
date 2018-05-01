@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MapPractice" target="1.5" />
+      <module name="MapPractice" target="9" />
     </bytecodeTargetLevel>
   </component>
 </project>
